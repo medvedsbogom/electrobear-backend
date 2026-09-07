@@ -1,27 +1,34 @@
-# Deploy FastAPI on Render
+# ЭлектроМишка — прототип AI-ассистента
+Python-сервис, который принимает сообщение от интерфейса, обращается к GigaChat и возвращает ответ. Небольшой пример интеграции языковой модели в собственный продукт.
 
-Use this repo as a template to deploy a Python [FastAPI](https://fastapi.tiangolo.com) service on Render.
+## Что реализовано
+- HTTP-метод `POST /ask` с JSON-полем `message`.
+- Получение access token через OAuth GigaChat.
+- Запрос к модели с системной инструкцией для ассистента «ЭлектроМишка».
+- Ответ в формате `{"reply": "..."}` и обработка неуспешных HTTP-ответов провайдера.
+- Конфигурация запуска на Render.
 
-See https://render.com/docs/deploy-fastapi or follow the steps below:
+## Стек
+Python, FastAPI, Uvicorn, Requests, GigaChat API.
 
-## Manual Steps
+## Запуск
+Установите зависимости: `pip install -r requirements.txt`.
 
-1. You may use this repository directly or [create your own repository from this template](https://github.com/render-examples/fastapi/generate) if you'd like to customize the code.
-2. Create a new Web Service on Render.
-3. Specify the URL to your new repository or this repository.
-4. Render will automatically detect that you are deploying a Python service and use `pip` to download the dependencies.
-5. Specify the following as the Start Command.
+Задайте переменную окружения `GIGACHAT_AUTH_KEY` — ключ авторизации из личного кабинета провайдера. В PowerShell:
 
-    ```shell
-    uvicorn main:app --host 0.0.0.0 --port $PORT
-    ```
+```powershell
+$env:GIGACHAT_AUTH_KEY = "<ваш новый ключ>"
+uvicorn main:app --reload
+```
 
-6. Click Create Web Service.
+Откройте `http://127.0.0.1:8000/docs` и вызовите `POST /ask`, например с телом `{"message":"Привет!"}`.
 
-Or simply click:
+Для Render используется команда `uvicorn main:app --host 0.0.0.0 --port $PORT`. Ключ задаётся в настройках окружения сервиса.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/fastapi)
+## Статус и границы
+Это прототип интеграции. В текущей версии нет истории диалога, собственной авторизации пользователей, ограничения частоты запросов и кеширования токена. CORS разрешает все источники для тестирования; перед публичным запуском нужно задать конкретные домены. Сетевые вызовы синхронные, без явно заданных таймаутов — это также требует доработки для эксплуатации.
 
-## Thanks
+Ранее опубликованный ключ необходимо отозвать у провайдера: перенос в окружение не удаляет его из истории Git.
 
-Thanks to [Harish](https://harishgarg.com) for the [inspiration to create a FastAPI quickstart for Render](https://twitter.com/harishkgarg/status/1435084018677010434) and for some sample code!
+## Происхождение
+Первоначальная конфигурация развёртывания основана на [FastAPI-шаблоне Render](https://github.com/render-examples/fastapi).
